@@ -32,8 +32,11 @@
 #include "ProgramMTL.h"
 #include "DeviceInfoMTL.h"
 #include "RenderTargetMTL.h"
-
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+#include "../opengl/DeviceGL.h"
+#endif
 #include "base/ccMacros.h"
+#include "platform/CCDevice.h"
 
 CC_BACKEND_BEGIN
 
@@ -42,9 +45,18 @@ id<CAMetalDrawable> DeviceMTL::_currentDrawable = nil;
 
 Device* Device::getInstance()
 {
-    if (! Device::_instance)
+    if (! Device::_instance) {
+        // only in ios can downgrade to openggl
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+        if (CC_USE_METAL) {
+            Device::_instance = new (std::nothrow) DeviceMTL();
+        } else {
+            Device::_instance = new (std::nothrow) DeviceGL();
+        }
+#else
         Device::_instance = new (std::nothrow) DeviceMTL();
-
+#endif
+    }
     return Device::_instance;
 }
 

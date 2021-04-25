@@ -35,6 +35,7 @@
 
 CC_BACKEND_BEGIN
 
+#if defined(CC_USE_GL) || defined(CC_USE_GLES)
 Device* Device::getInstance()
 {
     if (!_instance)
@@ -42,6 +43,7 @@ Device* Device::getInstance()
     
     return _instance;
 }
+#endif
 
 DeviceGL::DeviceGL()
 {
